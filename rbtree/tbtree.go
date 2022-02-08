@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	RED   bool = true
-	BLACK bool = false
-	LEFTCHILD int = -1
-	RIGHTCHILD int = 1
-	NIL int = 0
+	RED        bool = true
+	BLACK      bool = false
+	LEFTCHILD  int  = -1
+	RIGHTCHILD int  = 1
+	NIL        int  = 0
 )
 
 type Node struct {
@@ -25,6 +25,7 @@ type RBTree struct {
 	count uint64
 }
 type NodeSlice []*Node
+
 func NewNode(val item.Item) *Node {
 	return &Node{
 		leftChild:  nil,
@@ -34,14 +35,14 @@ func NewNode(val item.Item) *Node {
 		color:      RED,
 	}
 }
-func NewRBTree() *RBTree{
+func NewRBTree() *RBTree {
 	return &RBTree{
-		root: nil,
+		root:  nil,
 		count: 0,
 	}
 }
 func (n *Node) whichChild() int {
-	if n.parent == nil{
+	if n.parent == nil {
 		return NIL
 	}
 	if n == n.parent.leftChild {
@@ -56,9 +57,9 @@ func (n *Node) GetVal() item.Item {
 	return n.value
 }
 func (n *Node) GetColor() string {
-	if n.color == RED{
+	if n.color == RED {
 		return "RED"
-	}else{
+	} else {
 		return "BLACK"
 	}
 }
@@ -78,13 +79,13 @@ func (n *Node) uncleNode() *Node {
 	return n.grandNode().rightChild
 }
 
-func leftRotate(n *Node) *Node{
+func leftRotate(n *Node) *Node {
 	retNode := n.rightChild
 	n.rightChild = retNode.leftChild
 	retNode.leftChild = n
 	return retNode
 }
-func rightRotate(n *Node) *Node{
+func rightRotate(n *Node) *Node {
 	retNode := n.leftChild
 	n.leftChild = retNode.rightChild
 	retNode.rightChild = n
@@ -147,52 +148,52 @@ func insert(newNode *Node, node *Node) (*Node, error) {
 		return node, nil
 	}
 }
-func insertCase1(node *Node) (root *Node){
-	if node.parent == nil{
+func insertCase1(node *Node) (root *Node) {
+	if node.parent == nil {
 		node.color = BLACK
 		root = node
 		return root
 	}
 	return insertCase2(node)
 }
-func insertCase2(node *Node) (root *Node){
-	if node.parent.color == BLACK{
+func insertCase2(node *Node) (root *Node) {
+	if node.parent.color == BLACK {
 		return
 	}
 	return insertCase3(node)
 }
-func insertCase3(node *Node) (root *Node){
-	if uncle := node.uncleNode();uncle != nil && uncle.color == RED{
+func insertCase3(node *Node) (root *Node) {
+	if uncle := node.uncleNode(); uncle != nil && uncle.color == RED {
 		grand := node.grandNode()
 		node.parent.color = BLACK
 		uncle.color = BLACK
 		grand.color = RED
 		return insertFixup(grand)
 	}
-	return  insertCase4(node)
+	return insertCase4(node)
 }
-func insertCase4(node *Node) (root *Node){
-	if node.whichChild() == RIGHTCHILD && node.parent.whichChild() == LEFTCHILD{
+func insertCase4(node *Node) (root *Node) {
+	if node.whichChild() == RIGHTCHILD && node.parent.whichChild() == LEFTCHILD {
 		leftRotate(node.parent)
 		node = node.leftChild
-	}else if node.whichChild() == LEFTCHILD && node.parent.whichChild() == RIGHTCHILD{
+	} else if node.whichChild() == LEFTCHILD && node.parent.whichChild() == RIGHTCHILD {
 		rightRotate(node.parent)
 		node = node.rightChild
 	}
 	return insertCase5(node)
 }
-func insertCase5(node *Node) (root *Node){
+func insertCase5(node *Node) (root *Node) {
 	grand := node.grandNode()
 	node.parent.color = BLACK
 	grand.color = RED
-	if node.whichChild() == LEFTCHILD && node.parent.whichChild() == LEFTCHILD{
+	if node.whichChild() == LEFTCHILD && node.parent.whichChild() == LEFTCHILD {
 		root = rightRotate(grand)
-	}else{
+	} else {
 		root = leftRotate(grand)
 	}
 	return root
 }
-func insertFixup(node *Node) (root *Node){
+func insertFixup(node *Node) (root *Node) {
 	return insertCase1(node)
 }
 func (rbt *RBTree) Insert(val item.Item) error {
@@ -213,8 +214,9 @@ func (rbt *RBTree) Insert(val item.Item) error {
 var midValue NodeSlice
 var frontValue NodeSlice
 var backValue NodeSlice
-func treeGetValue(node *Node){
-	if node == nil{
+
+func treeGetValue(node *Node) {
+	if node == nil {
 		return
 	}
 	frontValue = append(frontValue, node)
@@ -229,13 +231,19 @@ func (rbt *RBTree) PrintTree() {
 	backValue = nil
 	treeGetValue(rbt.root)
 	fmt.Printf("front: \n")
-	for _,v := range frontValue {fmt.Printf("value: %v, color: %v | ",v.GetVal(),v.GetColor())}
+	for _, v := range frontValue {
+		fmt.Printf("value: %v, color: %v | ", v.GetVal(), v.GetColor())
+	}
 	fmt.Printf("\nmid: \n")
-	for _,v := range midValue {fmt.Printf("value: %v, color: %v | ",v.GetVal(),v.GetColor())}
+	for _, v := range midValue {
+		fmt.Printf("value: %v, color: %v | ", v.GetVal(), v.GetColor())
+	}
 	fmt.Printf("\nback: \n")
-	for _,v := range backValue {fmt.Printf("value: %v, color: %v | ",v.GetVal(),v.GetColor())}
+	for _, v := range backValue {
+		fmt.Printf("value: %v, color: %v | ", v.GetVal(), v.GetColor())
+	}
 }
 
-func (rbt *RBTree) GetCount() uint64{
+func (rbt *RBTree) GetCount() uint64 {
 	return rbt.count
 }
