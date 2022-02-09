@@ -13,73 +13,23 @@ const (
 	NIL        int  = 0
 )
 
-type Node struct {
-	leftChild  *Node
-	rightChild *Node
-	parent     *Node
-	value      item.Item
-	color      bool
-}
+var (
+	midValue NodeSlice
+	frontValue NodeSlice
+	backValue NodeSlice
+)
+
 type RBTree struct {
 	root  *Node
 	count uint64
 }
 type NodeSlice []*Node
 
-func NewNode(val item.Item) *Node {
-	return &Node{
-		leftChild:  nil,
-		rightChild: nil,
-		parent:     nil,
-		value:      val,
-		color:      RED,
-	}
-}
 func NewRBTree() *RBTree {
 	return &RBTree{
 		root:  nil,
 		count: 0,
 	}
-}
-func (n *Node) whichChild() int {
-	if n.parent == nil {
-		return NIL
-	}
-	if n == n.parent.leftChild {
-		return LEFTCHILD
-	}
-	if n == n.parent.rightChild {
-		return RIGHTCHILD
-	}
-	return NIL
-}
-func (n *Node) GetVal() string {
-	return n.value.GetValue()
-}
-func (n *Node) GetColor() string {
-	if n.color == RED {
-		return "RED"
-	} else {
-		return "BLACK"
-	}
-}
-func (n *Node) PrintNode() {
-	fmt.Printf("value: %v, color: %v | ", n.GetVal(), n.GetColor())
-}
-func (n *Node) grandNode() *Node {
-	if n.parent == nil {
-		return nil
-	}
-	return n.parent.parent
-}
-func (n *Node) uncleNode() *Node {
-	if n.grandNode() == nil {
-		return nil
-	}
-	if n.parent.whichChild() == RIGHTCHILD {
-		return n.grandNode().leftChild
-	}
-	return n.grandNode().rightChild
 }
 
 func leftRotate(n *Node) *Node {
@@ -242,10 +192,9 @@ func (rbt *RBTree) Insert(val item.Item) error {
 	return nil
 }
 
-var midValue NodeSlice
-var frontValue NodeSlice
-var backValue NodeSlice
-
+func (rbt *RBTree) GetCount() uint64 {
+	return rbt.count
+}
 func treeGetValue(node *Node) {
 	if node == nil {
 		return
@@ -273,8 +222,4 @@ func (rbt *RBTree) PrintTree() {
 	for _, v := range backValue {
 		v.PrintNode()
 	}
-}
-
-func (rbt *RBTree) GetCount() uint64 {
-	return rbt.count
 }
