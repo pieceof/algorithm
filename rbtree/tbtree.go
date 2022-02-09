@@ -84,26 +84,40 @@ func (n *Node) uncleNode() *Node {
 
 func leftRotate(n *Node) *Node {
 	retNode := n.rightChild
-	if retNode == nil {n.PrintNode()}
-	if n == nil {fmt.Printf("2222\n")}
+	if n.whichChild() == LEFTCHILD{
+		n.parent.leftChild = retNode
+	}else if n.whichChild() == RIGHTCHILD{
+		n.parent.rightChild = retNode
+	}
+	retNode.parent = n.parent
 	n.rightChild = retNode.leftChild
 	if n.rightChild != nil{
 		n.rightChild.parent = n
 	}
+
 	retNode.leftChild = n
-	retNode.parent = n.parent
 	n.parent = retNode
+
 	return retNode
 }
 func rightRotate(n *Node) *Node {
 	retNode := n.leftChild
+
+	if n.whichChild() == LEFTCHILD{
+		n.parent.leftChild = retNode
+	}else if n.whichChild() == RIGHTCHILD{
+		n.parent.rightChild = retNode
+	}
+	retNode.parent = n.parent
+
 	n.leftChild = retNode.rightChild
 	if n.leftChild != nil{
 		n.leftChild.parent = n
 	}
+
 	retNode.rightChild = n
-	retNode.parent = n.parent
 	n.parent = retNode
+
 	return retNode
 }
 
@@ -166,7 +180,7 @@ func insert(newNode *Node, node *Node) (*Node, error) {
 	}
 }
 func insertCase1(node *Node) (root *Node) {
-	if node.parent == nil {
+	if node.whichChild() == NIL {
 		node.color = BLACK
 		root = node
 		return root
@@ -185,8 +199,6 @@ func insertCase3(node *Node) (root *Node) {
 		node.parent.color = BLACK
 		uncle.color = BLACK
 		grand.color = RED
-		fmt.Println("\ngrand: ")
-		grand.PrintNode()
 		return insertFixup(grand)
 	}
 	return insertCase4(node)
@@ -222,13 +234,11 @@ func (rbt *RBTree) Insert(val item.Item) error {
 		return err
 	}
 	rbt.count++
-	rbt.PrintTree()
 	rbt.root = tmpNode
 	tNode := insertFixup(newNode)
-	if rbt.root.parent != nil {
+	if rbt.root.whichChild() != NIL {
 		rbt.root = tNode
 	}
-	rbt.PrintTree()
 	return nil
 }
 
