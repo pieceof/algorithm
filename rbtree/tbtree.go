@@ -53,8 +53,8 @@ func (n *Node) whichChild() int {
 	}
 	return NIL
 }
-func (n *Node) GetVal() item.Item {
-	return n.value
+func (n *Node) GetVal() string {
+	return n.value.GetValue()
 }
 func (n *Node) GetColor() string {
 	if n.color == RED {
@@ -62,6 +62,9 @@ func (n *Node) GetColor() string {
 	} else {
 		return "BLACK"
 	}
+}
+func (n *Node) PrintNode() {
+	fmt.Printf("value: %v, color: %v | ", n.GetVal(), n.GetColor())
 }
 func (n *Node) grandNode() *Node {
 	if n.parent == nil {
@@ -81,14 +84,26 @@ func (n *Node) uncleNode() *Node {
 
 func leftRotate(n *Node) *Node {
 	retNode := n.rightChild
+	if retNode == nil {n.PrintNode()}
+	if n == nil {fmt.Printf("2222\n")}
 	n.rightChild = retNode.leftChild
+	if n.rightChild != nil{
+		n.rightChild.parent = n
+	}
 	retNode.leftChild = n
+	retNode.parent = n.parent
+	n.parent = retNode
 	return retNode
 }
 func rightRotate(n *Node) *Node {
 	retNode := n.leftChild
 	n.leftChild = retNode.rightChild
+	if n.leftChild != nil{
+		n.leftChild.parent = n
+	}
 	retNode.rightChild = n
+	retNode.parent = n.parent
+	n.parent = retNode
 	return retNode
 }
 
@@ -128,7 +143,7 @@ func insert(newNode *Node, node *Node) (*Node, error) {
 	if equal {
 		return nil, fmt.Errorf("Node is exist")
 	}
-	less, err := node.value.Less(newNode.value)
+	less, err := newNode.value.Less(node.value)
 	if err != nil {
 		return nil, err
 	}
@@ -138,6 +153,7 @@ func insert(newNode *Node, node *Node) (*Node, error) {
 			return nil, err
 		}
 		node.leftChild = tmpNode
+		tmpNode.parent = node
 		return node, nil
 	} else {
 		tmpNode, err := insert(newNode, node.rightChild)
@@ -145,6 +161,7 @@ func insert(newNode *Node, node *Node) (*Node, error) {
 			return nil, err
 		}
 		node.rightChild = tmpNode
+		tmpNode.parent = node
 		return node, nil
 	}
 }
@@ -168,6 +185,8 @@ func insertCase3(node *Node) (root *Node) {
 		node.parent.color = BLACK
 		uncle.color = BLACK
 		grand.color = RED
+		fmt.Println("\ngrand: ")
+		grand.PrintNode()
 		return insertFixup(grand)
 	}
 	return insertCase4(node)
@@ -203,11 +222,13 @@ func (rbt *RBTree) Insert(val item.Item) error {
 		return err
 	}
 	rbt.count++
+	rbt.PrintTree()
 	rbt.root = tmpNode
-	tmpNode = insertFixup(newNode)
+	tNode := insertFixup(newNode)
 	if rbt.root.parent != nil {
-		rbt.root = tmpNode
+		rbt.root = tNode
 	}
+	rbt.PrintTree()
 	return nil
 }
 
@@ -230,17 +251,17 @@ func (rbt *RBTree) PrintTree() {
 	frontValue = nil
 	backValue = nil
 	treeGetValue(rbt.root)
-	fmt.Printf("front: \n")
+	fmt.Printf("\nfront: \n")
 	for _, v := range frontValue {
-		fmt.Printf("value: %v, color: %v | ", v.GetVal(), v.GetColor())
+		v.PrintNode()
 	}
 	fmt.Printf("\nmid: \n")
 	for _, v := range midValue {
-		fmt.Printf("value: %v, color: %v | ", v.GetVal(), v.GetColor())
+		v.PrintNode()
 	}
 	fmt.Printf("\nback: \n")
 	for _, v := range backValue {
-		fmt.Printf("value: %v, color: %v | ", v.GetVal(), v.GetColor())
+		v.PrintNode()
 	}
 }
 
